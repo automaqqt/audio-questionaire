@@ -1,0 +1,232 @@
+/* --- Main Container --- */
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1rem;
+  }
+  
+  /* --- Header --- */
+  .header {
+    width: 100%;
+    max-width: 900px;
+    padding: 1.5rem 1rem;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .header h1 {
+    margin: 0;
+    font-size: 1.6em;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  /* --- Main Content Area --- */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 700px;
+    padding: 0 1rem 2rem 1rem;
+  }
+  
+  /* --- Status & Feedback Area --- */
+  .statusArea {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1.5rem;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 0.95em;
+  }
+  
+  .statusArea p {
+    margin: 0.3rem 0;
+  }
+  
+  .feedback {
+    font-weight: 500;
+  }
+  
+  .errorFeedback {
+    color: #c0392b;
+    font-weight: bold;
+  }
+  
+  /* --- Content Sections --- */
+  .questionArea,
+  .confirmationArea,
+  .completeArea,
+  .errorArea,
+  .questionnaireInfoDisplay {
+    width: 100%;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .questionArea h3,
+  .confirmationArea h4,
+  .completeArea h2,
+  .errorArea h3,
+  .questionnaireInfoDisplay h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #34495e;
+    font-weight: 600;
+  }
+  
+  .questionText {
+    font-size: 1.6em;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    line-height: 1.4;
+  }
+  
+  .optionsText {
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+  
+  /* --- Buttons --- */
+  .buttonBase { /* Base style for all buttons */
+    padding: 0.75rem 1.5rem;
+    font-size: 1.05em;
+    font-weight: 500;
+    border: none; /* Moved from specific buttons */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+    min-width: 150px;
+    text-align: center;
+    display: inline-block;
+    margin: 0.5rem;
+    text-decoration: none; /* Ensure no underline if used as <a> */
+    line-height: normal; /* Ensure consistent line height */
+  }
+  .buttonBase:hover:not(:disabled) { /* Apply hover only if not disabled */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  .buttonBase:active:not(:disabled) { /* Apply active only if not disabled */
+    transform: translateY(0px);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+  .buttonBase:disabled {
+    background-color: #bdc3c7 !important; /* Use !important to override specific button colors */
+    color: #7f8c8d !important;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .actionButton { /* Primary actions */
+    background-color: #3498db;
+    color: white;
+  }
+  .actionButton:hover:not(:disabled) { /* Specific hover for actionButton */
+    background-color: #2980b9;
+  }
+  
+  .confirmButton { /* For "Yes" confirmation */
+    background-color: #2ecc71;
+    color: white;
+  }
+  .confirmButton:hover:not(:disabled) { /* Specific hover */
+    background-color: #27ae60;
+  }
+  
+  .retryButton { /* For "No, Try Again" or dangerous actions */
+    background-color: #e74c3c;
+    color: white;
+  }
+  .retryButton:hover:not(:disabled) { /* Specific hover */
+    background-color: #c0392b;
+  }
+  
+  .secondaryButton { /* For less prominent actions */
+    background-color: #f0f0f0;
+    color: #555;
+    border: 1px solid #ccc; /* Add border for secondary */
+  }
+  .secondaryButton:hover:not(:disabled) { /* Specific hover */
+    background-color: #e0e0e0;
+  }
+  
+  .buttonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  /* --- Specific Element Styling --- */
+  .confirmationArea p {
+    margin: 0.5rem 0;
+    font-size: 1.1em;
+  }
+  .confirmationArea p strong {
+    color: #2c3e50;
+  }
+  
+  /* --- Footer --- */
+  .footer {
+    width: 100%;
+    max-width: 900px;
+    padding: 1.5rem 1rem;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+    font-size: 0.9em;
+    color: #7f8c8d;
+    margin-top: auto;
+  }
+  
+  /* --- Responsive Adjustments --- */
+  @media (max-width: 600px) {
+    .header h1 {
+      font-size: 1.3em;
+    }
+    .questionText {
+      font-size: 1.3em;
+    }
+    .optionsText {
+      font-size: 1em;
+    }
+    .buttonBase { /* Adjust base for responsive */
+      font-size: 0.95em;
+      padding: 0.6rem 1.2rem;
+      width: 100%;
+      max-width: 300px;
+      margin: 0.3rem 0;
+    }
+    .buttonGroup {
+      flex-direction: column;
+      align-items: center;
+    }
+    .questionArea,
+    .confirmationArea,
+    .completeArea,
+    .errorArea,
+    .questionnaireInfoDisplay {
+      padding: 1rem 1.2rem;
+    }
+  }

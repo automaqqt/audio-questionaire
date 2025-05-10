@@ -1,0 +1,94 @@
+{
+  "title": "Fragen zu deiner Gesundheit (KIDSCREEN-10)",
+  "description": "Wenn du an die letzte Woche denkst...",
+  "questions": [
+    {
+      "id": "Q1_KIDSCREEN",
+      "text": "Hast du dich fit und wohl gefühlt?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet überhaupt nicht, 2 bedeutet ein wenig, 3 bedeutet mittelmäßig, 4 bedeutet ziemlich, und 5 bedeutet sehr."
+    },
+    {
+      "id": "Q2_KIDSCREEN",
+      "text": "Bist du voller Energie gewesen?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet nie, 2 bedeutet selten, 3 bedeutet manchmal, 4 bedeutet oft, und 5 bedeutet immer."
+    },
+    {
+      "id": "Q3_KIDSCREEN",
+      "text": "Hast du dich traurig gefühlt?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet nie, 2 bedeutet selten, 3 bedeutet manchmal, 4 bedeutet oft, und 5 bedeutet immer."
+    },
+    {
+      "id": "Q4_KIDSCREEN",
+      "text": "Hast du dich einsam gefühlt?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet nie, 2 bedeutet selten, 3 bedeutet manchmal, 4 bedeutet oft, und 5 bedeutet immer."
+    },
+    {
+      "id": "Q5_KIDSCREEN",
+      "text": "Hast du genug Zeit für dich selbst gehabt?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet nie, 2 bedeutet selten, 3 bedeutet manchmal, 4 bedeutet oft, und 5 bedeutet immer."
+    },
+    {
+      "id": "Q6_KIDSCREEN",
+      "text": "Konntest du in deiner Freizeit die Dinge machen, die du tun wolltest?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet nie, 2 bedeutet selten, 3 bedeutet manchmal, 4 bedeutet oft, und 5 bedeutet immer."
+    },
+    {
+      "id": "Q7_KIDSCREEN",
+      "text": "Haben deine Mutter / dein Vater dich gerecht behandelt?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet nie, 2 bedeutet selten, 3 bedeutet manchmal, 4 bedeutet oft, und 5 bedeutet immer."
+    },
+    {
+      "id": "Q8_KIDSCREEN",
+      "text": "Hast du mit deinen Freunden Spaß gehabt?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet nie, 2 bedeutet selten, 3 bedeutet manchmal, 4 bedeutet oft, und 5 bedeutet immer."
+    },
+    {
+      "id": "Q9_KIDSCREEN",
+      "text": "Bist du in der Schule gut zurechtgekommen?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet überhaupt nicht, 2 bedeutet ein wenig, 3 bedeutet mittelmäßig, 4 bedeutet ziemlich, und 5 bedeutet sehr."
+    },
+    {
+      "id": "Q10_KIDSCREEN",
+      "text": "Konntest du gut aufpassen?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet nie, 2 bedeutet selten, 3 bedeutet manchmal, 4 bedeutet oft, und 5 bedeutet immer."
+    },
+    {
+      "id": "Q_GesundheitAllgemein",
+      "text": "Wie würdest du deine Gesundheit im Allgemeinen beschreiben?",
+      "type": "scale",
+      "min_value": 1,
+      "max_value": 5,
+      "options_text": "Antworte mit einer Zahl zwischen 1 und 5. 1 bedeutet ausgezeichnet, 2 bedeutet sehr gut, 3 bedeutet gut, 4 bedeutet weniger gut, und 5 bedeutet schlecht."
+    }
+  ]
+}

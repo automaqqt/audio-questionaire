@@ -1,0 +1,4 @@
+*.pyc
+/backend/app/models/vosk-model-de-0.21
+/backend/app/temp_audio
+/backend/debug_audio_files
