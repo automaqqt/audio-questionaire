@@ -207,8 +207,8 @@ async def process_pdf_extract_and_generate_audio(
         async with httpx.AsyncClient(timeout=60.0) as client: # Timeout for worker calls
             for idx, q_data_from_llm in enumerate(structured_data_from_llm["questions"]):
                 text_to_speak = q_data_from_llm["text"]
-                if q_data_from_llm.get("options_text"):
-                    text_to_speak += " " + q_data_from_llm["options_text"]
+                if q_data_from_llm.get("optionsText"):
+                    text_to_speak += " " + q_data_from_llm["optionsText"]
                 
                 audio_web_path = None
                 if text_to_speak and text_to_speak.strip():
