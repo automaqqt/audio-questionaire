@@ -20,7 +20,7 @@ _whisper_model_instance: Optional[WhisperModel] = None
 # Smaller models are faster but less accurate. "base" or "small" are good starting points.
 # "large-v3" is very accurate but resource-intensive.
 # For German, a multilingual model like "base", "small", "medium", or "large-vX" is needed.
-WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "large-v3") # "base" is a good balance
+WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "medium") # "base" is a good balance
 
 # Device: "cuda" (for NVIDIA GPU), "cpu"
 # Other devices like "mps" (Apple Silicon) might be supported by underlying CTranslate2
@@ -78,6 +78,7 @@ def _parse_value_from_transcription(text: str, question: Question) -> Tuple[Opti
      #   pass # words2num not available
 
     processed_text = processed_text.replace("zwei","2").replace("eins","1").replace("drei","3").replace("vier","4").replace("fünf","5")
+    processed_text = processed_text.replace("two","2").replace("one","1").replace("three","3").replace("four","4").replace("five","5")
 
     if question.type == "scale":
         import re
@@ -105,7 +106,7 @@ def _parse_value_from_transcription(text: str, question: Question) -> Tuple[Opti
     return None, False, "Unsupported question type for parsing."
 
 
-def transcribe_and_parse(audio_content: bytes, question_details: Question, original_filename: Optional[str] = "unknown_audio.bin") -> Tuple[str, Dict[str, Any]]:
+def transcribe_and_parse(audio_content: bytes, question_details: Question, original_filename: Optional[str] = "unknown_audio.bin", language: str ="de") -> Tuple[str, Dict[str, Any]]:
     if not is_stt_ready():
         return "STT service (faster-whisper) not ready.", {"value_found": False, "error_message": "STT not available"}
 
@@ -139,10 +140,10 @@ def transcribe_and_parse(audio_content: bytes, question_details: Question, origi
         # For KIDSCREEN, we know it's German.
         segments, info = _whisper_model_instance.transcribe(
             temp_audio_filepath,
-            beam_size=5, # Default is 5, can adjust
-            language="de", # Specify German for better results with KIDSCREEN
-            # vad_filter=True, # Optional: use VAD to filter out silence
-            # vad_parameters=dict(min_silence_duration_ms=500) # Optional VAD params
+            beam_size=6, # Default is 5, can adjust
+            language=language, # Specify German for better results with KIDSCREEN
+            vad_filter=True, # Optional: use VAD to filter out silence
+            #vad_parameters=dict(min_silence_duration_ms=300) # Optional VAD params
         )
         
         detected_language = info.language

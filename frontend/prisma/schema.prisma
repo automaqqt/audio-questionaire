@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "./node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// --- NextAuth.js Required Models ---
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? 
+  access_token      String? 
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? 
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// --- Application Specific Models ---
+model User {
+  id                    String                 @id @default(cuid())
+  name                  String?
+  email                 String?                @unique
+  emailVerified         DateTime?
+  passwordHash          String? 
+  image                 String?
+  role                  UserRole               @default(USER)
+  accounts              Account[]
+  sessions              Session[]
+  createdQuestionnaires Questionnaire[]        @relation("CreatedBy")
+  questionnaireAttempts QuestionnaireAttempt[]
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+}
+
+enum UserRole {
+  USER       // Participant taking the questionnaire
+  RESEARCHER // User who can upload and manage questionnaires
+  ADMIN      // Optional: Superuser for system management
+}
+
+model Questionnaire {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  
+  language    String   @default("en") // Primary language of the questionnaire content (e.g., "de", "en")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creatorId   String
+  creator     User     @relation("CreatedBy", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  originalPdfFilename String? // Name of the original uploaded PDF
+  // originalPdfStorageKey String? // If using cloud storage (e.g., S3 key)
+  isProcessed Boolean  @default(false) // True after OCR, LLM, and TTS generation are complete
+  processingError String? // Store any error message if processing failed
+
+  questions   Question[]
+  attempts    QuestionnaireAttempt[]
+
+  @@index([creatorId])
+}
+
+model Question {
+  id        String  @id @default(cuid())
+  text      String      // Question text itself
+  type      String               // e.g., "scale", "boolean_custom_map", "text_input" (for visual mode)
+  order     Int                  // Order of the question within the questionnaire
+
+  // For 'scale' type
+  minValue    Int?
+  maxValue    Int?
+  optionsText String?  // TTS prompt for scale options like "Answer 1 for Never, 2 for Sometimes..."
+
+  // For 'boolean_custom_map'
+  trueValueSpoken  Json? // List of spoken words e.g. ["yes", "ja"]
+  trueValueNumeric String?  // Numeric value to store, e.g., "1"
+  falseValueSpoken Json?
+  falseValueNumeric String? // e.g., "0"
+
+  // For visual mode - explicit options if not just a simple scale
+  // Example: [{ "value": "option1_val", "label": "Option 1 Label"}, {"value": "option2_val", "label": "Option 2 Label"}]
+  visualOptions Json?
+
+  questionnaireId String
+  questionnaire   Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+
+  preGeneratedAudios PreGeneratedAudio[]
+  answers            Answer[]
+
+  @@index([questionnaireId, order]) // Ensures order is unique per questionnaire
+}
+
+model PreGeneratedAudio {
+  id         String @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  languageCode String 
+  audioType    String @default("main") // "main", "options", "combined"
+  audioPath  String @unique // This might need to be non-unique if audioType makes the combo unique
+  createdAt  DateTime @default(now())
+
+  @@unique([questionId, languageCode, audioType]) // Now unique on this combination
+  @@index([questionId])
+}
+
+model QuestionnaireAttempt {
+  id        String    @id @default(cuid())
+  userId    String?   // If participant is logged in. Could be null for anonymous attempts.
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull) // SetNull if user is deleted but we want to keep attempt data
+  
+  // For anonymous users, could use a browser fingerprint or a generated session ID
+  // anonymousIdentifier String? @unique 
+  
+  questionnaireId String
+  questionnaire   Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade) // If questionnaire is deleted, attempts are too
+
+  mode        AttemptMode   // VISUAL or AUDIO
+  status      AttemptStatus @default(IN_PROGRESS)
+  startedAt   DateTime      @default(now())
+  completedAt DateTime?
+
+  answers     Answer[]
+
+  @@index([userId])
+  @@index([questionnaireId])
+}
+
+enum AttemptMode {
+  VISUAL
+  AUDIO
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+}
+
+model Answer {
+  id          String   @id @default(cuid())
+  attemptId   String
+  attempt     QuestionnaireAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id], onDelete:Restrict) // Prevent deleting a Question if it has Answers
+
+  // For audio mode
+  transcribedResponse String?
+  parsedValue         String? // Store parsed value as string for flexibility (e.g. "3", "1" for true, "0" for false)
+  
+  // For visual mode - could be a single value, or JSON string for multi-select, etc.
+  visualResponse      String? 
+
+  isConfirmed         Boolean  @default(false) // Primarily for audio mode's voice confirmation step
+  answeredAt          DateTime @default(now())
+
+  @@index([attemptId])
+  @@index([questionId])
+}

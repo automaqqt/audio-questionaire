@@ -48,9 +48,10 @@ export const apiClient = {
         return response.json();
     },
 
-    submitAudioAnswer: async (audioBlob: Blob): Promise<TranscribedApiResponse> => {
+    submitAudioAnswer: async (audioBlob: Blob, language: string): Promise<TranscribedApiResponse> => {
         const formData = new FormData();
         formData.append('audio_file', audioBlob, 'response.wav'); // FastAPI expects 'audio_file'
+        formData.append('language', language)
 
         const response = await fetch(`${API_BASE_URL}/answer/submit`, {
             method: 'POST',

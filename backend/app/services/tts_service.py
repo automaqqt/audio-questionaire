@@ -34,19 +34,18 @@ def initialize_tts():
 def is_tts_ready() -> bool:
     return _tts_instance is not None
 
-def synthesize_speech(text: str) -> Optional[str]:
+async def synthesize_speech(text: str, output_filepath:str, language_code:str="en") -> Optional[str]:
     if not is_tts_ready():
         print("Coqui TTS service not initialized.")
         return None
     try:
-        output_filename = f"tts_coqui_output_{uuid.uuid4()}.wav"
-        output_path = os.path.join(_TEMP_AUDIO_DIR, output_filename)
+        output_path = output_filepath
         print(f"Synthesizing speech for: '{text[:50]}...' to {output_path}")
         _tts_instance.tts_to_file(
             text=text, 
             file_path=output_path,
             speaker=_tts_instance.speakers[0] if _tts_instance.is_multi_speaker else None,
-            language=_tts_instance.languages[0] if _tts_instance.is_multi_lingual else None
+            language=language_code if _tts_instance.is_multi_lingual else None
         ) # Add speaker/language if model requires
         return output_path if os.path.exists(output_path) else None
     except Exception as e:

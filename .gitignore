@@ -2,3 +2,9 @@
 /backend/app/models/vosk-model-de-0.21
 /backend/app/temp_audio
 /backend/debug_audio_files
+.*/env*
+/frontend/prisma/node_modules
+.env
+/frontend/public/audio_cache
+/frontend/data
+/backend/frontend_public_mock/audio_cache
