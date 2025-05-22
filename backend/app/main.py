@@ -1,21 +1,13 @@
 from fastapi import FastAPI, HTTPException, File, UploadFile, Form, APIRouter
-from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
-import io
-from typing import List, Dict, Any, Optional
-from contextlib import asynccontextmanager
 import shutil # For file operations
 import tempfile # For temporary files
 import httpx
 import uuid # For unique identifiers
 
-# --- Application Specific Imports ---
-# Assuming Pydantic models for FastAPI internal use or response are defined here or imported
-from models.pymods import TranscribedResponse # From your existing pymods
 # Your existing services
-from services import tts_service, stt_service
 # New service/module for PDF processing logic
 from services import pdf_processor_service # We will create this
 
@@ -31,32 +23,6 @@ if not NEXTJS_PUBLIC_DIR_ABS_PATH:
 
 AUDIO_CACHE_BASE_REL_PATH_IN_NEXTJS_PUBLIC = "audio_cache/questionnaires"
 
-# --- Lifespan Manager (for model loading) ---
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    print("FastAPI Application startup...")
-    print("Initializing TTS Service...")
-    tts_service.initialize_tts()
-    if not tts_service.is_tts_ready():
-        print("WARNING: TTS Service (FastAPI) did not initialize correctly.")
-
-    print("Initializing STT Service (faster-whisper)...")
-    stt_service.initialize_stt() # This uses faster-whisper
-    if not stt_service.is_stt_ready():
-        print("WARNING: STT Service (FastAPI) did not initialize correctly.")
-    
-    # Initialize PDF processor if it has models to load (e.g. Tesseract lang data if not system-wide)
-    pdf_processor_service.initialize_processor()
-
-    print("FastAPI Application startup complete.")
-    yield
-    print("FastAPI Application shutdown...")
-    if tts_service.is_tts_ready():
-        tts_service.shutdown_tts()
-    if stt_service.is_stt_ready():
-        stt_service.shutdown_stt()
-    print("FastAPI Application shutdown complete.")
-
 app = FastAPI( title="Voice Questionnaire Backend Processor")
 
 # CORS Middleware - Allow Next.js frontend
@@ -67,75 +33,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# --- Existing STT Route (from POC, now using faster-whisper via stt_service) ---
-@app.post("/api/answer/submit", response_model=TranscribedResponse)
-async def submit_answer_stt(audio_file: UploadFile = File(...), language: str = Form(...)):
-    if not stt_service.is_stt_ready():
-        raise HTTPException(status_code=503, detail="STT service not available.")
-    
-    # For STT, we don't need current_q_details if faster-whisper handles language detection
-    # or if the language is passed from Next.js (which is better)
-    # Let's assume Next.js will pass the language for STT if needed by faster-whisper
-    # For now, this simple version just transcribes.
-    try:
-        audio_content = await audio_file.read()
-        
-        # The stt_service.transcribe_and_parse now needs only audio_content and optionally lang
-        # The parsing logic related to Question model details should now happen in Next.js
-        # after getting the raw transcription.
-        # So, this endpoint will just return raw transcription.
-        # Or, if FastAPI still does parsing, it needs question context.
-        # For now, let's simplify: FastAPI returns transcription, Next.js calls its own parser.
-        
-        # Modified STT service to just transcribe for this scenario:
-        # transcription_text = stt_service.transcribe_audio(audio_content, language_code="de") # Example
-        
-        # To keep it closer to your existing TranscribedResponse:
-        # We'll assume `transcribe_and_parse` in FastAPI's stt_service can work without
-        # detailed question model for now, or we pass minimal info.
-        # Let's assume for now it just returns transcription and Next.js handles parsing based on its Question model.
-        # So, the response model needs to be simpler if FastAPI only returns transcription.
-        # For consistency with your existing TranscribedResponse, let's assume it returns something similar.
-        
-        # A simplified call (stt_service.py needs adjustment or a new method)
-        # This needs dummy question details or stt_service to be more flexible
-        from models.pymods import Question as PyQuestion # Temporary dummy for FastAPI
-        dummy_question = PyQuestion(id="dummy", text="dummy", type="scale") # This is not ideal
-
-        transcription_text, parse_data = stt_service.transcribe_and_parse(
-            audio_content, 
-            dummy_question, # This is the part that needs thought: FastAPI doesn't have Next.js's Prisma Question model
-            original_filename=audio_file.filename,
-            language= language
-        )
-
-        return TranscribedResponse(
-            transcription=transcription_text,
-            parsed_value=parse_data.get("parsed_value"), # This parsing might be redundant if Next.js re-parses
-            value_found=parse_data.get("value_found", False),
-            error_message=parse_data.get("error_message")
-        )
-
-    except Exception as e:
-        print(f"Error processing STT answer in FastAPI: {e}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error processing STT answer: {str(e)}")
-
-# --- Existing TTS Audio Serving Route (from POC, serves from FastAPI's temp audio) ---
-# This route is for Coqui TTS's temp files if it generates them.
-# If TTS directly writes to Next.js public folder, this specific route might not be needed
-# by Next.js, as Next.js will serve those files statically.
-# However, keeping it in case Coqui TTS service still uses its own temp dir.
-@app.get("/api/audio/{file_name}")
-async def serve_tts_audio_file(file_name: str):
-    # This path points to Coqui TTS's internal temp dir, as defined in tts_service.py
-    file_path = os.path.join(tts_service._TEMP_AUDIO_DIR_COQUI, file_name) 
-    if os.path.exists(file_path):
-        return FileResponse(file_path, media_type="audio/wav")
-    print(f"FastAPI: TTS Audio file not found at {file_path}")
-    raise HTTPException(status_code=404, detail="TTS Audio file not found from FastAPI server.")
 
 
 # --- Router for PDF Processing ---
