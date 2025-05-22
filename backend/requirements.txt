@@ -1,8 +1,9 @@
 fastapi
 uvicorn
-TTS
 python-multipart
 faster-whisper
 opencv-python
 pytesseract
 pdf2image
+httpx
+dotenv

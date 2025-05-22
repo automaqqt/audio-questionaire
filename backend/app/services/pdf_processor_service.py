@@ -1,3 +1,4 @@
+import base64
 import os
 import json
 from dotenv import load_dotenv
@@ -89,15 +90,16 @@ async def _perform_ocr_on_pdf_internal(pdf_path: str, language_tesseract: str = 
         print(f"PDF Processor: Error during OCR: {e}", file=sys.stderr)
         raise RuntimeError(f"OCR processing failed: {str(e)}")
 
-
-async def _llm_extract_questionnaire_structure(ocr_text: str, language_hint: str) -> Optional[Dict[str, Any]]:
+def encode_pdf_to_base64(pdf_path):
+    with open(pdf_path, "rb") as pdf_file:
+        return base64.b64encode(pdf_file.read()).decode('utf-8')
+    
+async def _llm_extract_questionnaire_structure(pdf_path: str, language_hint: str) -> Optional[Dict[str, Any]]:
     """Internal LLM logic, adapted from extract.py."""
     if not OPENROUTER_API_KEY:
         print("PDF Processor Error: OPENROUTER_API_KEY not set.", file=sys.stderr)
         raise RuntimeError("LLM service API key is not configured.")
-    if not ocr_text or not ocr_text.strip():
-        print("PDF Processor: OCR text is empty, skipping LLM.", file=sys.stderr)
-        return None
+    
 
     json_format_description = """
     {
@@ -133,13 +135,13 @@ async def _llm_extract_questionnaire_structure(ocr_text: str, language_hint: str
     9.  **Scales**: Carefully identify scale labels. They might appear once above a group of questions. Apply the correct scale to all relevant questions.
     10. **Clean OCR**: Ignore OCR artifacts, page numbers, or irrelevant headers/footers.
 
-    OCR Text to process:
-    --- OCR START ---
-    {ocr_text}
-    --- OCR END ---
+    OCR Text to process "document.pdf"!
 
     Provide ONLY the JSON object as your response. Ensure it's well-formed.
     """
+
+    base64_pdf = encode_pdf_to_base64(pdf_path)
+    data_url = f"data:application/pdf;base64,{base64_pdf}"
 
     try:
         # print(f"PDF Processor: Sending text to LLM (model: {OPENROUTER_MODEL})...", file=sys.stderr)
@@ -153,7 +155,26 @@ async def _llm_extract_questionnaire_structure(ocr_text: str, language_hint: str
                 "model": OPENROUTER_MODEL,
                 "messages": [
                     {"role": "system", "content": f"You are an expert AI assistant for parsing questionnaires in {language_hint} into JSON."},
-                    {"role": "user", "content": prompt}
+                    {"role": "user", "content": [
+                    {
+                        "type": "text",
+                        "text": prompt
+                    },
+                    {
+                        "type": "file",
+                        "file": {
+                            "filename": "document.pdf",
+                            "file_data": data_url
+                        }
+                    }]}
+                ],
+                "plugins":[
+                    {
+                        "id": "file-parser",
+                        "pdf": {
+                            "engine": "native"  # defaults to "mistral-ocr". See Pricing below
+                        }
+                    }
                 ],
                 "response_format": {"type": "json_object"} # Request JSON output
             })
@@ -194,11 +215,11 @@ async def extract_questionnaire_from_pdf(pdf_path: str, language_code: str) -> D
 
     print(f"PDF Processor: Starting extraction for PDF '{pdf_path}', language '{language_code}' (Tesseract lang: '{tesseract_lang}')")
     
-    ocr_text = await _perform_ocr_on_pdf_internal(pdf_path, language_tesseract=tesseract_lang)
-    if not ocr_text or not ocr_text.strip():
-        raise ValueError("OCR process yielded no usable text from the PDF.")
+    #ocr_text = await _perform_ocr_on_pdf_internal(pdf_path, language_tesseract=tesseract_lang)
+    #if not ocr_text or not ocr_text.strip():
+     #   raise ValueError("OCR process yielded no usable text from the PDF.")
 
-    structured_data = await _llm_extract_questionnaire_structure(ocr_text, language_hint=language_code)
+    structured_data = await _llm_extract_questionnaire_structure(pdf_path, language_hint=language_code)
     if not structured_data:
         raise ValueError("LLM failed to extract structured data from OCR text.")
     

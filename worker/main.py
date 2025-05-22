@@ -243,7 +243,7 @@ def generate_speech_via_api_and_decode(
 # Value: dict with "api_model_identifier", "voice", and generation parameters
 ORPHEUS_LANGUAGE_API_SETUP = {
     "en": {
-        "api_model_identifier": os.getenv("ORPHEUS_API_MODEL_EN", "orpheus-3b-0.1-ft"), # Model name inference server expects
+        "api_model_identifier": os.getenv("ORPHEUS_API_MODEL_EN", "isaiahbjork/orpheus-3b-0.1-ft"), # Model name inference server expects
         "voice": os.getenv("ORPHEUS_VOICE_EN", DEFAULT_VOICE),
         "temperature": float(os.getenv("ORPHEUS_API_TEMP_EN", DEFAULT_TEMPERATURE)),
         "top_p": float(os.getenv("ORPHEUS_API_TOP_P_EN", DEFAULT_TOP_P)),
@@ -299,7 +299,7 @@ FASTER_WHISPER_AVAILABLE = False
 _whisper_model_instance = None
 try:
     from faster_whisper import WhisperModel
-    WHISPER_MODEL_SIZE = os.getenv("WORKER_WHISPER_MODEL_SIZE", "base")
+    WHISPER_MODEL_SIZE = os.getenv("WORKER_WHISPER_MODEL_SIZE", "medium")
     WHISPER_DEVICE = os.getenv("WORKER_WHISPER_DEVICE", "cpu")
     WHISPER_COMPUTE_TYPE = "int8" if WHISPER_DEVICE == "cpu" else "float16"
     

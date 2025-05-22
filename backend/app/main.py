@@ -204,7 +204,7 @@ async def process_pdf_extract_and_generate_audio(
         
         # Generate TTS for questions and add audio paths
         processed_questions_with_audio = []
-        async with httpx.AsyncClient(timeout=60.0) as client: # Timeout for worker calls
+        async with httpx.AsyncClient(timeout=600.0) as client: # Timeout for worker calls
             for idx, q_data_from_llm in enumerate(structured_data_from_llm["questions"]):
                 text_to_speak = q_data_from_llm["text"]
                 if q_data_from_llm.get("optionsText"):
@@ -278,4 +278,4 @@ if __name__ == "__main__":
     print("Starting FastAPI server (Backend Processor)...")
     # Ensure environment variables like OPENROUTER_API_KEY, NEXTJS_PUBLIC_DIR_PATH are set
     # For Poppler/Tesseract, ensure they are in PATH or configured in pdf_processor_service.py
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
