@@ -18,16 +18,19 @@ import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { Loader2 } from "lucide-react";
 
+
+const validRoles = [UserRole.USER, UserRole.RESEARCHER] as const;
 const signupFormSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }).max(50),
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
-  confirmPassword: z.string(),
-  role: z.nativeEnum(UserRole).default(UserRole.USER),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match.",
-  path: ["confirmPassword"],
-});
+    name: z.string().min(2, { message: "Name must be at least 2 characters." }).max(50),
+    email: z.string().email({ message: "Please enter a valid email address." }),
+    password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+    confirmPassword: z.string(),
+    role: z.nativeEnum(UserRole), // .default(UserRole.USER) entfernt
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match.",
+    path: ["confirmPassword"],
+  });
+  
 
 type SignupFormValues = z.infer<typeof signupFormSchema>;
 
@@ -35,10 +38,10 @@ export function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
 
   const form = useForm<SignupFormValues>({
-    resolver: zodResolver(signupFormSchema),
-    defaultValues: { name: "", email: "", password: "", confirmPassword: "", role: UserRole.USER },
+    resolver: zodResolver(signupFormSchema)
   });
 
   async function onSubmit(values: SignupFormValues) {
@@ -53,7 +56,7 @@ export function SignUpForm() {
           name: values.name,
           email: values.email,
           password: values.password,
-          role: values.role,
+          role: UserRole.USER,
         }),
       });
 
@@ -101,6 +104,7 @@ export function SignUpForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
+       {/* //@ts-ignore */} {/* This is a JSX comment, not a TS directive, so it has no effect */}
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField control={form.control} name="name" render={({ field }) => ( <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>)} />
             <FormField control={form.control} name="email" render={({ field }) => ( <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input type="email" placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>)} />

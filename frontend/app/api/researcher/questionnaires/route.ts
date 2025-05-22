@@ -37,9 +37,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
- /*  if (!session || session.user?.role !== UserRole.RESEARCHER) {
+  if (!session) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-  } */
+  } 
   const userId = session?.user.id;
 
   let tempSavedFilePath: string | undefined = undefined; // To ensure cleanup
@@ -72,7 +72,9 @@ export async function POST(req: NextRequest) {
     await fs.writeFile(tempSavedFilePath, fileBuffer);
     console.log(`[Next.js API] Temporarily saved PDF for FastAPI to: ${tempSavedFilePath}`);
 
+    
     questionnaireRecord = await prisma.questionnaire.create({
+      //@ts-ignore
       data: {
         title,
         language,

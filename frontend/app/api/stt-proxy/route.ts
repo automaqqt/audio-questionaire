@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
   try {
     const clientFormData = await req.formData(); // Audio blob from client (Next.js Frontend)
     const audioFile = clientFormData.get('audio_file') as File | null;
-    const question = JSON.parse(clientFormData.get('question'));
+    const question = JSON.parse(clientFormData.get('question') as string);
     //console.log(question.json())
 
     if (!audioFile) {

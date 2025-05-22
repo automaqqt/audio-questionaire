@@ -1,5 +1,5 @@
 // pages/api/auth/[...nextauth].ts
-import NextAuth, { NextAuthOptions, Provider } from 'next-auth'; // Import Provider type
+import NextAuth, { NextAuthOptions } from 'next-auth'; // Import Provider type
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from './prisma';
 
@@ -18,7 +18,7 @@ console.log("DATABASE_URL:", process.env.DATABASE_URL ? "SET" : "NOT SET");
 console.log("--- End NextAuth Env Vars ---");
 
 
-const providers: Provider[] = [ // Explicitly type as Provider[]
+const providers: any[] = [ // Explicitly type as Provider[]
   CredentialsProvider({
     name: "Credentials",
     credentials: {

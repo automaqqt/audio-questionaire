@@ -12,6 +12,11 @@ export interface QuestionClientBase {
     optionsText?: string | null; // For audio prompt or visual display of scale context
     visualOptions?: any | null; // Prisma Json type, could be { value: string; label: string }[] for custom radio/checkbox
   }
+
+  export interface VisualOptionItem {
+    label: string;
+    value: string;
+  }
   
   // Question type specifically for the audio page, including pre-generated audio info
   export interface QuestionWithAudioClientType extends QuestionClientBase {

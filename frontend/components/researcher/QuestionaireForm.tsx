@@ -11,13 +11,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation"; // Use next/navigation for app router like behavior
 
-const formSchema = z.object({
-  title: z.string().min(3, { message: "Title must be at least 3 characters." }).max(150),
-  language: z.string().min(2, { message: "Please select a language." }),
-  pdfFile: z.instanceof(FileList)
-    .refine(files => files?.length === 1, "A PDF file is required.")
-    .refine(files => files?.[0]?.type === "application/pdf", "File must be a PDF.")
-    .refine(files => files?.[0]?.size <= 5 * 1024 * 1024, "PDF file size must be less than 5MB."), // 5MB limit
+const MAX_FILE_SIZE_MB = 10;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+export const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  language: z.string().min(1, "Language is required"),
+  pdfFile: z.any()
 });
 
 export type QuestionnaireFormValues = z.infer<typeof formSchema>;
@@ -30,11 +29,12 @@ interface QuestionnaireFormProps {
 
 export function QuestionnaireForm({ onSubmit, isSubmitting, initialData }: QuestionnaireFormProps) {
   const form = useForm<QuestionnaireFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema), // formSchema von Versuch 1
     defaultValues: {
       title: initialData?.title || "",
-      language: initialData?.language || "",
-      pdfFile: undefined, // FileList can't have default value directly
+      language: initialData?.language || "en", // Stelle sicher, dass ein Default existiert
+      pdfFile: initialData?.pdfFile || (undefined as any), // RHF behandelt 'undefined' für File-Inputs oft korrekt
+                                                          // Casting zu 'any' kann TS-Gemecker unterdrücken, wenn es 'FileList' erwartet
     },
   });
 

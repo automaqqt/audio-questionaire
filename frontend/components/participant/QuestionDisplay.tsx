@@ -26,7 +26,7 @@ const getScaleOptions = (question: QuestionWithAudioClientType): VisualOptionIte
     // Ensure the items in visualOptions match VisualOptionItem structure
     // This might involve a type assertion or a mapping if the DB stores it slightly differently
     //console.log(visualQ)
-    return visualQ.map(opt => ({
+    return visualQ.map((opt: VisualOptionItem) => ({
         value: String(opt.value), // Ensure value is string
         label: String(opt.label)  // Ensure label is string
     }));

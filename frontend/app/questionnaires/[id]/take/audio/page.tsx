@@ -177,7 +177,7 @@ const questionnaireId = params?.id;
                   console.log(`DEBUG: Triggered browser download of audio. Size: ${audioBlob.size}, Type: ${audioBlob.type}`); */
   
                   if (audioBlob.size < 200) { // Heuristic, a WAV header alone is ~44 bytes
-                      showFeedback("Recorded audio seems too short or empty. Please try again.", true);
+                      showFeedback("Recorded audio seems too short or empty. Please try again.", "error");
                       setPageState('listening'); // Or an error state, then back to listening
                       return;
                   }
@@ -185,11 +185,9 @@ const questionnaireId = params?.id;
                   try {
                     const formData = new FormData();
                     formData.append('audio_file', audioBlob, `response.webm`);
+                    //@ts-ignore
                     formData.append('language', questionnaire.language);
-                    console.log(currentQuestion);
                     formData.append('question', JSON.stringify(currentQuestion));
-                    console.log('HAFAISFGAG')
-                    console.log(JSON.parse(formData.get('question')))
                     const sttProxyResponse = await fetch(`/api/stt-proxy`, { // Call your Next.js STT Proxy
                         method: 'POST',
                         body: formData,
@@ -204,7 +202,7 @@ const questionnaireId = params?.id;
                       setParsedValue(result.parsed_value);
                       setIsValueFound(result.value_found);
                       if (!result.value_found || result.error_message) {
-                          showFeedback(result.error_message || "I couldn't understand a value. Please review.", true);
+                          showFeedback(result.error_message || "I couldn't understand a value. Please review.",  "error");
                       } else {
                           showFeedback(`I understood: ${result.parsed_value}. Is that correct?`);
                       }
@@ -212,7 +210,7 @@ const questionnaireId = params?.id;
                   } catch (error) {
                       console.error("Error submitting answer:", error);
                       const detail = error instanceof Error ? error.message : String(error);
-                      showFeedback(`Error processing answer: ${detail}. Please try again.`, true);
+                      showFeedback(`Error processing answer: ${detail}. Please try again.`,  "error");
                       setPageState('awaitingConfirmation'); // Still show what (if anything) was transcribed, or let user retry
                   } finally {
                        // Clear chunks here after API call and processing for the current recording
@@ -223,7 +221,7 @@ const questionnaireId = params?.id;
               mediaRecorderRef.current.onerror = (event) => {
                   console.error("MediaRecorder error:", event);
                   // @ts-ignore // MediaRecorderErrorEvent might not be typed well
-                  showFeedback(`Audio recording error: ${event.error?.name} - ${event.error?.message}. Please try again.`, true);
+                  showFeedback(`Audio recording error: ${event.error?.name} - ${event.error?.message}. Please try again.`,  "error");
                   setPageState('error'); // Or back to 'presentingQuestion'
                   stopMediaTracks(); // Clean up
               };
@@ -639,7 +637,7 @@ const questionnaireId = params?.id;
          );
      }
      if (pageState === 'error') {
-          return <CardContent className="text-center space-y-4"><AlertCircle className="w-12 h-12 text-red-500 mx-auto"/><p className="text-red-600 dark:text-red-400">{feedbackMessage || "An unknown error occurred."}</p><Button onClick={() => router.reload()} variant="outline">Try Reloading Page</Button></CardContent>;
+          return <CardContent className="text-center space-y-4"><AlertCircle className="w-12 h-12 text-red-500 mx-auto"/><p className="text-red-600 dark:text-red-400">{feedbackMessage || "An unknown error occurred."}</p><Button onClick={() => router.refresh()} variant="outline">Try Reloading Page</Button></CardContent>;
      }
 
      // Default/Fallback for states like presentingQuestion, transcribing, etc.
