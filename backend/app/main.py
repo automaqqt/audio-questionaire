@@ -73,7 +73,7 @@ async def process_pdf_extract_and_generate_audio(
         nextjs_project_public_dir = os.getenv("NEXTJS_PUBLIC_DIR_PATH", "../frontend/public") # Mock if not found
         print(f"Warning: Defaulting Next.js public dir to: {nextjs_project_public_dir}. Ensure this is correct.")
     
-    audio_cache_base_rel_path = "audio/questionnaires" # Relative to Next.js public
+    audio_cache_base_rel_path = "questionnaires" # Relative to Next.js public
     questionnaire_audio_output_dir_abs = os.path.join(nextjs_project_public_dir, audio_cache_base_rel_path, processing_batch_id)
     
     try:
