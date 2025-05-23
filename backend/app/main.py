@@ -11,7 +11,7 @@ import uuid # For unique identifiers
 # New service/module for PDF processing logic
 from services import pdf_processor_service # We will create this
 
-WORKER_TTS_URL = os.getenv("WORKER_TTS_URL", "http://localhost:8088/synthesize-speech") 
+WORKER_TTS_URL = os.getenv("WORKER_TTS_URL", "http://localhost:8087/synthesize-speech") 
 
 # Path to the Next.js public directory, writable by this FastAPI PDF Processor
 # This MUST be configured correctly based on your deployment.
@@ -22,6 +22,7 @@ if not NEXTJS_PUBLIC_DIR_ABS_PATH:
     print(f"WARNING: PDF Processor: NEXTJS_PUBLIC_DIR_PATH_FOR_AUDIO_SAVE env var not set. Falling back to: {NEXTJS_PUBLIC_DIR_ABS_PATH}")
 
 AUDIO_CACHE_BASE_REL_PATH_IN_NEXTJS_PUBLIC = "audio/questionnaires"
+print(NEXTJS_PUBLIC_DIR_ABS_PATH)
 
 app = FastAPI( title="Voice Questionnaire Backend Processor")
 
@@ -67,7 +68,7 @@ async def process_pdf_extract_and_generate_audio(
     # Example: FastAPI in 'backend/', Next.js in 'frontend/'
     # NEXTJS_PUBLIC_DIR should be an absolute path or correctly relative.
     # For local dev, if backend is sibling to frontend: ../frontend/public
-    nextjs_project_public_dir = os.path.abspath(NEXTJS_PUBLIC_DIR_ABS_PATH)
+    nextjs_project_public_dir = NEXTJS_PUBLIC_DIR_ABS_PATH
     if not os.path.isdir(nextjs_project_public_dir):
         # Fallback if structure is different, or use an environment variable
         nextjs_project_public_dir = os.getenv("NEXTJS_PUBLIC_DIR_PATH", "../frontend/public") # Mock if not found
@@ -75,7 +76,7 @@ async def process_pdf_extract_and_generate_audio(
     
     audio_cache_base_rel_path = "questionnaires" # Relative to Next.js public
     questionnaire_audio_output_dir_abs = os.path.join(nextjs_project_public_dir, audio_cache_base_rel_path, processing_batch_id)
-    
+    print(questionnaire_audio_output_dir_abs)
     try:
         os.makedirs(questionnaire_audio_output_dir_abs, exist_ok=True)
         print(f"FastAPI: Audio for this batch will be saved to: {questionnaire_audio_output_dir_abs}")

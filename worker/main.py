@@ -20,7 +20,7 @@ ORPHEUS_TTS_AVAILABLE = False
 _orpheus_api_configs = {} # Stores API model_id, voice, and other params for each lang
 
 # API Connection Settings (can be overridden by environment variables)
-ORPHEUS_API_BASE_URL = os.getenv("ORPHEUS_API_BASE_URL", "http://192.168.178.23:1234/v1") # For LM Studio, etc.
+ORPHEUS_API_BASE_URL = os.getenv("ORPHEUS_API_BASE_URL", "http://localhost:1234/v1") # For LM Studio, etc.
 ORPHEUS_API_ENDPOINT_PATH = os.getenv("ORPHEUS_API_ENDPOINT_PATH", "/completions") # Or /completions
 ORPHEUS_API_FULL_URL = f"{ORPHEUS_API_BASE_URL.rstrip('/')}{ORPHEUS_API_ENDPOINT_PATH}"
 ORPHEUS_API_HEADERS = {"Content-Type": "application/json"}
@@ -243,7 +243,7 @@ def generate_speech_via_api_and_decode(
 # Value: dict with "api_model_identifier", "voice", and generation parameters
 ORPHEUS_LANGUAGE_API_SETUP = {
     "en": {
-        "api_model_identifier": os.getenv("ORPHEUS_API_MODEL_EN", "isaiahbjork/orpheus-3b-0.1-ft"), # Model name inference server expects
+        "api_model_identifier": os.getenv("ORPHEUS_API_MODEL_EN", "orpheus-3b-0.1-ft"), # Model name inference server expects
         "voice": os.getenv("ORPHEUS_VOICE_EN", DEFAULT_VOICE),
         "temperature": float(os.getenv("ORPHEUS_API_TEMP_EN", DEFAULT_TEMPERATURE)),
         "top_p": float(os.getenv("ORPHEUS_API_TOP_P_EN", DEFAULT_TOP_P)),
@@ -253,7 +253,7 @@ ORPHEUS_LANGUAGE_API_SETUP = {
     },
     "de": {
         "api_model_identifier": os.getenv("ORPHEUS_API_MODEL_EN", "3b-de-ft-research_release"), # Model name inference server expects
-        "voice":"max",
+        "voice":"jana",
         "temperature": float(os.getenv("ORPHEUS_API_TEMP_EN", DEFAULT_TEMPERATURE)),
         "top_p": float(os.getenv("ORPHEUS_API_TOP_P_EN", DEFAULT_TOP_P)),
         "max_tokens": int(os.getenv("ORPHEUS_API_MAX_TOKENS_EN", DEFAULT_MAX_TOKENS)),
@@ -440,7 +440,7 @@ async def transcribe_audio_endpoint(audio_file: UploadFile = File(...), language
 
 
 if __name__ == "__main__":
-    port = int(os.getenv("WORKER_PORT", 8088))
+    port = int(os.getenv("WORKER_PORT", 8087))
     print(f"Starting STT/TTS Worker Microservice on port {port}")
     print(f"Orpheus TTS API URL: {ORPHEUS_API_FULL_URL}")
     if ORPHEUS_TTS_AVAILABLE:

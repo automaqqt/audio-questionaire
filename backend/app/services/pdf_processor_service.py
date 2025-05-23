@@ -17,7 +17,7 @@ load_dotenv()
 
 # --- Configuration ---
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemini-2.5-flash-preview")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemini-2.5-flash-preview-05-20")
 
 # Tesseract Configuration
 # pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' # If needed on Windows
@@ -112,7 +112,7 @@ async def _llm_extract_questionnaire_structure(pdf_path: str, language_hint: str
           "type": "String - Typically 'scale'. Other types could be 'boolean_custom_map', 'multiple_choice', 'text_input'. Infer from context.",
           "minValue": "Integer - The minimum numerical value for a 'scale' (e.g., 1). If not a number scale, null.",
           "maxValue": "Integer - The maximum numerical value for a 'scale' (e.g., 5). If not a number scale, null.",
-          "optionsText": "String - User-friendly text explaining scale options for AUDIO. E.g., 'Antworte mit 1 für Nie, bis 5 für Immer.' Should list all options if not too many, or describe the range clearly. Example for a 1-5 scale: 'Bitte antworte mit einer Zahl zwischen 1 und 5, wobei 1 [Bedeutung von 1], 2 [Bedeutung von 2], 3 [Bedeutung von 3], 4 [Bedeutung von 4] und 5 [Bedeutung von 5] bedeutet.'",
+          "optionsText": "String - User-friendly text explaining scale options for AUDIO. E.g., 'Antworte mit Nie, Manchmal, Selten, Häufig oder Immer.' Should list all options if not too many, or describe the range clearly. Example for a 5 values scale: 'Bitte antworte mit [Bedeutung von 1 von 5].'",
           "visualOptions": [ {"value": "1", "label": "Nie"}, {"value": "2", "label": "Selten"} ]
         }
       ]
@@ -128,7 +128,7 @@ async def _llm_extract_questionnaire_structure(pdf_path: str, language_hint: str
     2.  **`text`**: Extract the precise question wording.
     3.  **`type`**: Infer the question type (e.g., "scale", "multiple_choice"). Default to "scale" if unsure but options are present.
     4.  **`minValue`, `maxValue`**: For "scale" types with numerical answers, determine the range (e.g., 1 to 5).
-    5.  **`optionsText` (Crucial for Audio)**: Create a concise, spoken instruction for the audio app. It MUST map the text labels of the scale (e.g., "Nie", "Selten", "Immer" or "Überhaupt nicht", "Sehr") to numbers. For a 1-5 scale where 1 is 'Nie' and 5 is 'Immer', an example is: "Antworte mit einer Zahl von 1 bis 5. 1 bedeutet Nie, 2 Selten, 3 Manchmal, 4 Oft, und 5 Immer." If there are more than 5-6 options, describe the range endpoints clearly, e.g., "1 bedeutet 'stimme überhaupt nicht zu' und 7 bedeutet 'stimme voll und ganz zu'."
+    5.  **`optionsText` (Crucial for Audio)**: Create a concise, spoken instruction for the audio app. It must explain/list all the available answer options (e.g., "Nie", "Selten", "Immer" or "Überhaupt nicht", "Sehr"). For a 1-5 scale where 1 is 'Nie' and 5 is 'Immer', an example is: "Antworte entweder mit Nie, Selten, Manchmal, Oft oder Immer." If there are more than 5-6 options, describe the range endpoints clearly, e.g., "Von 'stimme überhaupt nicht zu' zu 'stimme voll und ganz zu'."
     6.  **`visualOptions`**: If the questionnaire has explicit text labels for each choice (like radio buttons or checkboxes), list them as an array of `{{value: "numeric_value_as_string", label: "Text Label"}}`. Example: `[{{"value": "1", "label": "Nie"}}, {{"value": "5", "label": "Immer"}}]`. The `value` should correspond to what would be stored.
     7.  **Language**: All extracted text in `title`, `description`, `questions.text`, `questions.optionsText`, and `questions.visualOptions.label` MUST be in the original questionnaire language ({language_hint}).
     8.  **Structure**: Identify the main questionnaire `title` and `description` (often introductory text).
