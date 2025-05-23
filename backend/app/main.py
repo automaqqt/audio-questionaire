@@ -21,7 +21,7 @@ if not NEXTJS_PUBLIC_DIR_ABS_PATH:
     NEXTJS_PUBLIC_DIR_ABS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "public"))
     print(f"WARNING: PDF Processor: NEXTJS_PUBLIC_DIR_PATH_FOR_AUDIO_SAVE env var not set. Falling back to: {NEXTJS_PUBLIC_DIR_ABS_PATH}")
 
-AUDIO_CACHE_BASE_REL_PATH_IN_NEXTJS_PUBLIC = "audio_cache/questionnaires"
+AUDIO_CACHE_BASE_REL_PATH_IN_NEXTJS_PUBLIC = "audio/questionnaires"
 
 app = FastAPI( title="Voice Questionnaire Backend Processor")
 
@@ -67,13 +67,13 @@ async def process_pdf_extract_and_generate_audio(
     # Example: FastAPI in 'backend/', Next.js in 'frontend/'
     # NEXTJS_PUBLIC_DIR should be an absolute path or correctly relative.
     # For local dev, if backend is sibling to frontend: ../frontend/public
-    nextjs_project_public_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "public"))
+    nextjs_project_public_dir = os.path.abspath(NEXTJS_PUBLIC_DIR_ABS_PATH)
     if not os.path.isdir(nextjs_project_public_dir):
         # Fallback if structure is different, or use an environment variable
         nextjs_project_public_dir = os.getenv("NEXTJS_PUBLIC_DIR_PATH", "../frontend/public") # Mock if not found
         print(f"Warning: Defaulting Next.js public dir to: {nextjs_project_public_dir}. Ensure this is correct.")
     
-    audio_cache_base_rel_path = "audio_cache/questionnaires" # Relative to Next.js public
+    audio_cache_base_rel_path = "audio/questionnaires" # Relative to Next.js public
     questionnaire_audio_output_dir_abs = os.path.join(nextjs_project_public_dir, audio_cache_base_rel_path, processing_batch_id)
     
     try:
