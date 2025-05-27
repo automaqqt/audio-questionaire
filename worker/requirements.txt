@@ -7,3 +7,5 @@ fastapi
 uvicorn
 snac
 python-multipart
+faster-whisper
+ffmpeg

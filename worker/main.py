@@ -232,7 +232,7 @@ FASTER_WHISPER_AVAILABLE = False
 _whisper_model_instance = None
 try:
     from faster_whisper import WhisperModel
-    WHISPER_MODEL_SIZE = os.getenv("WORKER_WHISPER_MODEL_SIZE", "small")
+    WHISPER_MODEL_SIZE = os.getenv("WORKER_WHISPER_MODEL_SIZE", "medium")
     WHISPER_DEVICE = os.getenv("WORKER_WHISPER_DEVICE", "cpu")
     WHISPER_COMPUTE_TYPE = "int8" if WHISPER_DEVICE == "cpu" else "float16"
     print(f"Worker: Initializing faster-whisper model: {WHISPER_MODEL_SIZE} ({WHISPER_DEVICE}, {WHISPER_COMPUTE_TYPE})")
