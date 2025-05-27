@@ -1,0 +1,9 @@
+nemo_toolkit[asr]
+misaki[zh]
+misaki[ja]
+kokoro
+orpheus-speech
+fastapi
+uvicorn
+snac
+python-multipart

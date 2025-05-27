@@ -9,3 +9,4 @@
 /frontend/data
 /backend/frontend_public_mock/audio_cache
 /frontend/public/questionnaires
+/worker/venv
